@@ -1,99 +1,110 @@
 import { useState } from 'react';
-import { Button, FormControl, FormGroup, Input, InputLabel,Typography,styled } from '@mui/material';
-import { Formik } from 'formik';
+import { addUser } from '../Service/api';
+import { onSuccess, onError } from '../helpers/alert';
 
-const Container =  styled(FormGroup)`
-width:50%;
-margin:5% auto 0 auto;
-& >div  { margin:top:20px}`
+import {
+  Button,
+  FormControl,
+  FormGroup,
+  Input,
+  InputLabel,
+  Typography,
+  styled,
+} from '@mui/material';
+// import { Formik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 
+const initialValue = {
+  username: '',
+  email: '',
+  password: '',
+  city: '',
+  buttonText: 'Register',
 
-const initialValues={ email: '', name: '',phone_no: '', address: '' }
+  error: '',
+  success: '',
+};
 
-const AddUser=()=> {
-    const [user,setUser] = useState(initialValues);
-    const  handleChange = (e)=>{
-        console.log(e)
-    }
-    
+const Container = styled(FormGroup)`
+    width: 50%;
+    margin: 5% 0 0 25%;
+    & > div {
+        margin-top: 20px;
+`;
+
+const AddUser = () => {
+  const [user, setUser] = useState(initialValue);
+  const { city, username, email, password, buttonText, error, success } = user;
+  let navigate = useNavigate();
+
+  const onValueChange = (e) => {
+    console.log(e.target.value);
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const addUserDetails = async () => {
+    setUser({ ...user, buttonText: 'Registering' });
+    await addUser(user, setUser);
+    // a();
+
+    setUser({ ...user, buttonText: 'Registering' });
+
+    // navigate('/all');
+  };
+
   return (
-   
-    <Formik
-    initialValues={{ email: '', name: '',phone_no: '', address: '' }}
-    validate={values => {
-      const errors = {};
-      if (!values.email) {
-        errors.email = 'Required';
-      } else if (
-        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-      ) {
-        errors.email = 'Invalid email address';
-      }
-      return errors;
-    }}
-    onSubmit={(values, { setSubmitting }) => {
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        setSubmitting(false);
-      }, 400);
-    }}
-  >
-    {({
-      values,
-      errors,
-      touched,
-      handleChange,
-      handleBlur,
-      handleSubmit,
-      isSubmitting,
-      /* and other goodies */
-    }) => (
+    <Container>
+      {success && onSuccess}
+      {error && onError}
+      <Typography variant="h4">Add User</Typography>
 
-        <Container>
-            <Typography variant="h4">Add User</Typography>
-        <FormControl>
-        {errors.email && touched.email && errors.email}
-            <InputLabel>Username*</InputLabel>
-            <Input type="name"
-                name="name"
-                onChange={(e)=>handleChange(e)}
-                onBlur={handleBlur}
-                value={values.name}/>
-        </FormControl>
-            <FormControl>
-                <InputLabel 
-                >Email*</InputLabel>
-                <Input type="email"
-                name="email"
-                onChange={(e)=>handleChange(e)}
-                onBlur={handleBlur}
-                value={values.email}/>
-            </FormControl>
-            <FormControl>
-                <InputLabel>Phone No*</InputLabel>
-                <Input type="phone_no"
-                name="phone_no"
-                onChange={(e)=>handleChange(e)}
-                onBlur={handleBlur}
-                value={values.phone_no}/>
-            </FormControl>
-            <FormControl>
-                <InputLabel>Address</InputLabel>
-                <Input type="address"
-                name="address"
-                onChange={(e)=>handleChange(e)}
-                onBlur={handleBlur}
-                value={values.address}/>
-            </FormControl>
-            <FormControl>
-                <Button variant="container">Add User</Button>
-            </FormControl>
-        </Container>
+      <FormControl>
+        <InputLabel htmlFor="my-input">Username</InputLabel>
+        <Input
+          onChange={(e) => onValueChange(e)}
+          name="username"
+          value={username}
+          id="my-input"
+        />
+      </FormControl>
+      <FormControl>
+        <InputLabel htmlFor="my-input">Email</InputLabel>
+        <Input
+          onChange={(e) => onValueChange(e)}
+          name="email"
+          value={email}
+          id="my-input"
+        />
+      </FormControl>
+      <FormControl>
+        <InputLabel htmlFor="my-input">Password</InputLabel>
+        <Input
+          onChange={(e) => onValueChange(e)}
+          name="password"
+          value={password}
+          id="my-input"
+        />
+      </FormControl>
+      <FormControl>
+        <InputLabel htmlFor="my-input">City</InputLabel>
+        <Input
+          onChange={(e) => onValueChange(e)}
+          name="city"
+          value={city}
+          id="my-input"
+        />
+      </FormControl>
+      <FormControl>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => addUserDetails()}
+        >
+          {buttonText}
+        </Button>
+      </FormControl>
+    </Container>
+  );
+};
 
-    
-    )}
-  </Formik>
-  )
-}
-
-export default AddUser
+export default AddUser;
