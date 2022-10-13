@@ -1,11 +1,13 @@
 import axios from 'axios';
-
+import { authenticate } from '../helpers/auth';
 import { onSuccess, onError } from '../helpers/alert';
-const usersUrl = 'http://localhost:8000/api/register';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AllUser from '../components/AllUser';
+const usersUrl = 'http://localhost:8000/api';
 // import { API } from '../config';
 
 export const getUsers = async (id) => {
-  id = id || '';
+  id = id || 'all';
   try {
     return await axios.get(`${usersUrl}/${id}`);
   } catch (error) {
@@ -15,14 +17,35 @@ export const getUsers = async (id) => {
 
 export const addUser = async (user, setUser) => {
   return await axios
-    .post(`${usersUrl}`, user)
-    .then((response) => onSuccess(response.message))
-    .catch((error) => onError(error.message));
+    .post(`${usersUrl}/register`, user)
+    .then((response) => console.log(response))
+    .catch((error) => console.log(error));
+  //   setUser({ ...user, username: '', email: '', password: '', city: '' });
+};
+
+export const loginUser = async (user) => {
+  return await axios
+    .post(`${usersUrl}/login`, user)
+    .then((response) => {
+      authenticate(response, () => {
+        if (response.status === 200) {
+          return (
+            <Routes>
+              <Route path="/" element={<AllUser />} />
+            </Routes>
+          );
+        }
+      });
+    })
+    .catch((error) => console.log(error));
   //   setUser({ ...user, username: '', email: '', password: '', city: '' });
 };
 
 export const deleteUser = async (id) => {
-  return await axios.delete(`${usersUrl}/${id}`);
+  return await axios
+    .delete(`${usersUrl}/delete/${id}`)
+    .then((response) => console.log(response))
+    .catch((error) => console.log(error));
 };
 
 export const editUser = async (id, user) => {
