@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { onSuccess, onError } from '../helpers/alert';
 
 import {
   FormGroup,
@@ -13,10 +14,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getUsers, editUser } from '../Service/api';
 
 const initialValue = {
-  name: '',
   username: '',
   email: '',
-  phone: '',
+  city: '',
+  password: '',
 };
 
 const Container = styled(FormGroup)`
@@ -28,7 +29,7 @@ const Container = styled(FormGroup)`
 
 const EditUser = () => {
   const [user, setUser] = useState(initialValue);
-  const { city, username, email, password } = user;
+  const { username, email, password ,city} = user;
   const { id } = useParams();
 
   let navigate = useNavigate();
@@ -37,18 +38,22 @@ const EditUser = () => {
     loadUserDetails();
   }, []);
 
-  const loadUserDetails = async () => {
+  const loadUserDetails = async () => { 
     const response = await getUsers(id);
     setUser(response.data);
+    // console.log(user)
   };
 
   const editUserDetails = async () => {
     const response = await editUser(id, user);
-    navigate('/all');
+    if(response.status==200){
+      onSuccess("Updated")
+      navigate('/all');
+    }
   };
 
   const onValueChange = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 

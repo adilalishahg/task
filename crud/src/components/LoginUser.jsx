@@ -51,7 +51,7 @@ const LoginUser = () => {
     //
     // }
     await await axios
-      .post(`${usersUrl}/login`, user)
+      .post(`${usersUrl}login`, user)
       .then((response) => {
         authenticate(response, () => {
           if (response.status === 200) {

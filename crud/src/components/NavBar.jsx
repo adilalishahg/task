@@ -15,9 +15,9 @@ const NavBar = () => {
   return (
     <Header position="static">
       <Toolbar>
-        <Tabs to="/">Code for Interview</Tabs>
         <Tabs to="/all">All</Tabs>
         <Tabs to="/add">Add New</Tabs>
+        <Tabs to="/login">LogIn</Tabs>
       </Toolbar>
     </Header>
   );

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { addUser } from '../Service/api';
 import { onSuccess, onError } from '../helpers/alert';
 
+
 import {
   Button,
   FormControl,
@@ -44,10 +45,21 @@ const AddUser = () => {
 
   const addUserDetails = async () => {
     setUser({ ...user, buttonText: 'Registering' });
-    await addUser(user, setUser);
+    const response = await addUser(user, setUser);
+    setUser({ ...user, buttonText: 'Register' });
+    
+    if(response.status===200){
+      onSuccess("User Added")
+      navigate('/all');
+      console.log(response)
+    }else{
+      onError("User Added")
+        // console.log(response)
+    }
+    
     // a();
 
-    setUser({ ...user, buttonText: 'Registering' });
+    
 
     // navigate('/all');
   };

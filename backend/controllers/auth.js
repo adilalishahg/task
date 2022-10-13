@@ -1,5 +1,6 @@
 const User = require('../models/users');
 const shortId = require('shortid');
+const jwt = require("jsonwebtoken")
 exports.register = (req, res) => {
   const { username, email, password, city } = req.body;
   // console.log(username, email, password, city);
@@ -39,7 +40,7 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
   const { email, password } = req.body;
-  // console.log(email);
+  console.log(email);
   User.findOne({ email }).exec((err, user) => {
     if (err || !user) {
       return res.status(400).json({
@@ -53,10 +54,21 @@ exports.login = (req, res) => {
       });
     }
     const { _id, username, email } = user;
+    const token = jwt.sign(
+      { username, email, password },
+      process.env.JWT_ACCOUNT_ACTIVATION,
+      {
+        expiresIn: '30s',
+      }
+    );
+    console.log(token)
     return res.json({
+      token,
       user: { _id, username, email },
     });
   });
+  const sessUser = { id: user.id, name: user.name, email: user.email };
+  req.session.user = sessUser; // Auto saves session data in mongo store
 };
 exports.all = (req, res) => {
   const all = User.find({}).exec((err, data) => {
@@ -96,3 +108,13 @@ exports.update = (req, res) => {
     res.json(updated);
   });
 };
+
+exports.logout = (req, res) => {
+  req.session.destroy((err) => {
+    //delete session data from store, using sessionID in cookie
+    if (err) throw err;
+    res.clearCookie("session-id"); // clears cookie containing expired sessionID
+    res.send("Logged out successfully");
+  });
+};
+

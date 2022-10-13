@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 // import { getUsers, deleteUser } from '../Service/api';
 import { Link } from 'react-router-dom';
+import { onError, onSuccess } from '../helpers/alert';
 
 const StyledTable = styled(Table)`
   width: 90%;
@@ -40,8 +41,14 @@ const AllUser = () => {
   }, []);
 
   const deleteUserData = async (id) => {
-    await deleteUser(id);
+    const response = await deleteUser(id);
+    console.log(response)
+    if(response.status==200){
+      onSuccess("Deleted")
     getAllUsers();
+    }else{
+      onError("Not Deleted")
+    }
   };
 
   const getAllUsers = async () => {
